@@ -145,9 +145,9 @@ Item {
     Dialog {
         id: confirmDeleteDialog
         property var targetNode: null
-        title: "确认删除"
+        title: "提示"
         width: 300
-        height: 120
+        height: 150
         modal: true
         standardButtons: Dialog.Yes | Dialog.No
 
