@@ -65,6 +65,17 @@ Item {
         return null;
     }
 
+    function findIndex(parent, target) {
+        if (!parent || !parent.children) return -1;
+        for (var i = 0; i < parent.children.length; i++) {
+            // 使用 nodeId 来比较节点，而不是直接比较对象引用
+            if (parent.children[i].nodeId === target.nodeId) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     // 右键菜单
     Menu {
         id: contextMenu
@@ -174,7 +185,7 @@ Item {
                 console.log("Found parent:", parent);
                 
                 if (parent) {
-                    var idx = parent.children.indexOf(confirmDeleteDialog.targetNode);
+                    var idx = findIndex(parent, confirmDeleteDialog.targetNode);
                     console.log("Node index:", idx);
                     
                     if (idx !== -1) {

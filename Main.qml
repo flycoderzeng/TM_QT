@@ -134,7 +134,8 @@ ApplicationWindow {
                 nodeName: inputField.text.trim(),
                 type: "folder",
                 expanded: false,
-                children: []
+                children: [],
+                nodeId: Math.random()
             });
             addNodeOverlay.targetNode.expanded = true;
             treeComponent.dataRevision++;
