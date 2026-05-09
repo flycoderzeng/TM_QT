@@ -168,12 +168,14 @@ Item {
                     var idx = parent.children.indexOf(confirmDeleteDialog.targetNode);
                     if (idx !== -1) {
                         parent.children.splice(idx, 1);
+                        // 强制刷新，使 Repeater 更新
+                        dataRevision++;
                         if (selectedNode === confirmDeleteDialog.targetNode) {
                             selectedNode = parent;
                             if (onNodeSelected) onNodeSelected(parent);
                         }
-                        dataRevision++;
                         if (onNodeDeleted) onNodeDeleted(confirmDeleteDialog.targetNode);
+                        console.log("Node deleted successfully");
                     }
                 }
             }
