@@ -82,7 +82,9 @@ Item {
             enabled: contextMenu.targetNode && contextMenu.targetNode !== treeData
             onClicked: {
                 if (contextMenu.targetNode && contextMenu.targetNode !== treeData) {
+                    var parent = findParent(treeData, contextMenu.targetNode);
                     confirmDeleteDialog.targetNode = contextMenu.targetNode;
+                    confirmDeleteDialog.parentNode = parent;
                     confirmDeleteDialog.open();
                 }
             }
@@ -145,6 +147,7 @@ Item {
     Dialog {
         id: confirmDeleteDialog
         property var targetNode: null
+        property var parentNode: null
         title: "提示"
         width: 300
         height: 150
@@ -162,22 +165,31 @@ Item {
         }
 
         onAccepted: {
-            if (confirmDeleteDialog.targetNode) {
-                var parent = findParent(treeData, confirmDeleteDialog.targetNode);
-                if (parent) {
-                    var idx = parent.children.indexOf(confirmDeleteDialog.targetNode);
-                    if (idx !== -1) {
-                        parent.children.splice(idx, 1);
-                        // 强制刷新，使 Repeater 更新
-                        dataRevision++;
-                        if (selectedNode === confirmDeleteDialog.targetNode) {
-                            selectedNode = parent;
-                            if (onNodeSelected) onNodeSelected(parent);
-                        }
-                        if (onNodeDeleted) onNodeDeleted(confirmDeleteDialog.targetNode);
-                        console.log("Node deleted successfully");
+            console.log("Delete accepted, targetNode:", confirmDeleteDialog.targetNode);
+            console.log("Delete accepted, parentNode:", confirmDeleteDialog.parentNode);
+            
+            if (confirmDeleteDialog.targetNode && confirmDeleteDialog.parentNode) {
+                var idx = confirmDeleteDialog.parentNode.children.indexOf(confirmDeleteDialog.targetNode);
+                console.log("Node index:", idx);
+                
+                if (idx !== -1) {
+                    confirmDeleteDialog.parentNode.children.splice(idx, 1);
+                    console.log("Node removed from parent");
+                    
+                    // 强制刷新，使 Repeater 更新
+                    dataRevision++;
+                    
+                    if (selectedNode === confirmDeleteDialog.targetNode) {
+                        selectedNode = confirmDeleteDialog.parentNode;
+                        if (onNodeSelected) onNodeSelected(confirmDeleteDialog.parentNode);
                     }
+                    if (onNodeDeleted) onNodeDeleted(confirmDeleteDialog.targetNode);
+                    console.log("Node deleted successfully");
+                } else {
+                    console.log("Error: Node index is -1");
                 }
+            } else {
+                console.log("Error: targetNode or parentNode is null");
             }
         }
 
