@@ -150,6 +150,7 @@ Item {
         height: 150
         modal: true
         standardButtons: Dialog.Yes | Dialog.No
+        anchors.centerIn: parent
 
         contentItem: Item {
             anchors.fill: parent
