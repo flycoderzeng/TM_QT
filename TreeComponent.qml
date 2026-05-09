@@ -82,19 +82,8 @@ Item {
             enabled: contextMenu.targetNode && contextMenu.targetNode !== treeData
             onClicked: {
                 if (contextMenu.targetNode && contextMenu.targetNode !== treeData) {
-                    var parent = findParent(treeData, contextMenu.targetNode);
-                    if (parent) {
-                        var idx = parent.children.indexOf(contextMenu.targetNode);
-                        if (idx !== -1) {
-                            parent.children.splice(idx, 1);
-                            if (selectedNode === contextMenu.targetNode) {
-                                selectedNode = parent;
-                                if (onNodeSelected) onNodeSelected(parent);
-                            }
-                            dataRevision++;
-                            if (onNodeDeleted) onNodeDeleted(contextMenu.targetNode);
-                        }
-                    }
+                    confirmDeleteDialog.targetNode = contextMenu.targetNode;
+                    confirmDeleteDialog.open();
                 }
             }
         }
@@ -187,6 +176,10 @@ Item {
                     }
                 }
             }
+        }
+
+        onRejected: {
+            console.log("Delete operation cancelled");
         }
     }
 
