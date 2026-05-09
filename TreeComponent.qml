@@ -55,8 +55,8 @@ Item {
     function findParent(root, target) {
         if (!root || !root.children) return null;
         for (var i = 0; i < root.children.length; i++) {
-            // 使用 nodeName 和其他属性来比较节点，而不是直接比较对象引用
-            if (root.children[i] === target) {
+            // 使用 nodeId 来比较节点，而不是直接比较对象引用
+            if (root.children[i].nodeId === target.nodeId) {
                 return root;
             }
             var found = findParent(root.children[i], target);
