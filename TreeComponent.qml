@@ -25,7 +25,8 @@ Item {
                 nodeName: "root",
                 type: "root",
                 expanded: true,
-                children: []
+                children: [],
+                nodeId: Math.random()
             };
         }
     }
@@ -54,7 +55,10 @@ Item {
     function findParent(root, target) {
         if (!root || !root.children) return null;
         for (var i = 0; i < root.children.length; i++) {
-            if (root.children[i] === target) return root;
+            // 使用 nodeName 和其他属性来比较节点，而不是直接比较对象引用
+            if (root.children[i] === target) {
+                return root;
+            }
             var found = findParent(root.children[i], target);
             if (found) return found;
         }
@@ -82,9 +86,7 @@ Item {
             enabled: contextMenu.targetNode && contextMenu.targetNode !== treeData
             onClicked: {
                 if (contextMenu.targetNode && contextMenu.targetNode !== treeData) {
-                    var parent = findParent(treeData, contextMenu.targetNode);
                     confirmDeleteDialog.targetNode = contextMenu.targetNode;
-                    confirmDeleteDialog.parentNode = parent;
                     confirmDeleteDialog.open();
                 }
             }
@@ -109,7 +111,8 @@ Item {
                             nodeName: n.nodeName,
                             type: n.type,
                             expanded: false,
-                            children: n.children.map(function(c) { return deepCopy(c); })
+                            children: n.children.map(function(c) { return deepCopy(c); }),
+                            nodeId: Math.random()
                         };
                     }
                     var newNode = deepCopy(clipboardData);
@@ -147,7 +150,6 @@ Item {
     Dialog {
         id: confirmDeleteDialog
         property var targetNode: null
-        property var parentNode: null
         title: "提示"
         width: 300
         height: 150
@@ -166,30 +168,34 @@ Item {
 
         onAccepted: {
             console.log("Delete accepted, targetNode:", confirmDeleteDialog.targetNode);
-            console.log("Delete accepted, parentNode:", confirmDeleteDialog.parentNode);
             
-            if (confirmDeleteDialog.targetNode && confirmDeleteDialog.parentNode) {
-                var idx = confirmDeleteDialog.parentNode.children.indexOf(confirmDeleteDialog.targetNode);
-                console.log("Node index:", idx);
+            if (confirmDeleteDialog.targetNode) {
+                var parent = findParent(treeData, confirmDeleteDialog.targetNode);
+                console.log("Found parent:", parent);
                 
-                if (idx !== -1) {
-                    confirmDeleteDialog.parentNode.children.splice(idx, 1);
-                    console.log("Node removed from parent");
+                if (parent) {
+                    var idx = parent.children.indexOf(confirmDeleteDialog.targetNode);
+                    console.log("Node index:", idx);
                     
-                    // 强制刷新，使 Repeater 更新
-                    dataRevision++;
-                    
-                    if (selectedNode === confirmDeleteDialog.targetNode) {
-                        selectedNode = confirmDeleteDialog.parentNode;
-                        if (onNodeSelected) onNodeSelected(confirmDeleteDialog.parentNode);
+                    if (idx !== -1) {
+                        parent.children.splice(idx, 1);
+                        console.log("Node removed from parent");
+                        
+                        // 强制刷新，使 Repeater 更新
+                        dataRevision++;
+                        
+                        if (selectedNode === confirmDeleteDialog.targetNode) {
+                            selectedNode = parent;
+                            if (onNodeSelected) onNodeSelected(parent);
+                        }
+                        if (onNodeDeleted) onNodeDeleted(confirmDeleteDialog.targetNode);
+                        console.log("Node deleted successfully");
+                    } else {
+                        console.log("Error: Node index is -1");
                     }
-                    if (onNodeDeleted) onNodeDeleted(confirmDeleteDialog.targetNode);
-                    console.log("Node deleted successfully");
                 } else {
-                    console.log("Error: Node index is -1");
+                    console.log("Error: parent is null");
                 }
-            } else {
-                console.log("Error: targetNode or parentNode is null");
             }
         }
 
