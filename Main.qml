@@ -30,7 +30,6 @@ ApplicationWindow {
                 id: treeComponent
                 anchors.fill: parent
                 treeData: treeData
-                selectedNode: selectedNode
                 onNodeSelected: function(node) {
                     selectedNode = node;
                 }
@@ -130,6 +129,7 @@ ApplicationWindow {
 
     function confirmAdd() {
         if (inputField.text.trim() !== "" && addNodeOverlay.targetNode) {
+            console.log("添加子节点到：", addNodeOverlay.targetNode.nodeName)
             addNodeOverlay.targetNode.children.push({
                 nodeName: inputField.text.trim(),
                 type: "folder",
@@ -139,6 +139,7 @@ ApplicationWindow {
             });
             addNodeOverlay.targetNode.expanded = true;
             treeComponent.dataRevision++;
+            treeComponent.selectedNode = addNodeOverlay.targetNode;
             if (treeComponent.onNodeAdded) {
                 treeComponent.onNodeAdded(addNodeOverlay.targetNode,
                     addNodeOverlay.targetNode.children[addNodeOverlay.targetNode.children.length - 1]);

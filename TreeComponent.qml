@@ -35,7 +35,7 @@ Item {
     signal requestAddNode(var parentNode)
 
     function showContextMenu(node) {
-        console.log("showContextMenu called with node:", node);
+        console.log("showContextMenu called with node:", node.nodeName);
         if (!node) {
             console.log("Warning: showContextMenu called with null node");
             // 尝试从treeData获取根节点
@@ -114,7 +114,7 @@ Item {
         }
         MenuItem {
             text: "粘贴节点"
-            enabled: contextMenu.targetNode && contextMenu.targetNode !== treeData && clipboardData !== null
+            enabled: contextMenu.targetNode && clipboardData !== null
             onClicked: {
                 if (clipboardData && contextMenu.targetNode) {
                     function deepCopy(n) {
@@ -166,7 +166,7 @@ Item {
         height: 150
         modal: true
         standardButtons: Dialog.Yes | Dialog.No
-        anchors.centerIn: parent
+        anchors.centerIn: Overlay.overlay
 
         contentItem: Item {
             anchors.fill: parent
