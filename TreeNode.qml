@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 
 Column {
     id: treeNode
-    width: parent ? parent.width : 0
+    width: treeComp ? treeComp.width : (parent ? parent.width : 0)
 
     property var node: null
     property int depth: 0
@@ -12,7 +12,7 @@ Column {
     // 节点行
     Row {
         id: nodeRow
-        width: parent.width
+        width: treeNode.width
         height: 30
         spacing: 0
 
