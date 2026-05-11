@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.15
 
 ApplicationWindow {
     visible: true
-    width: 1400
+    width: 1800
     height: 800
     title: "TM-你的自动化测试帮手"
 
@@ -19,10 +19,14 @@ ApplicationWindow {
 
     RowLayout {
         anchors.fill: parent
+        spacing: 0
 
         // 左侧树结构
         Rectangle {
+            id: leftPanel
             Layout.preferredWidth: 300
+            Layout.minimumWidth: 200
+            Layout.maximumWidth: 800
             Layout.fillHeight: true
             color: "#f0f0f0"
 
@@ -47,6 +51,35 @@ ApplicationWindow {
                     inputField.text = "";
                     addNodeOverlay.visible = true;
                     inputField.forceActiveFocus();
+                }
+            }
+        }
+
+        // 分隔条
+        Rectangle {
+            Layout.fillHeight: true
+            width: 4
+            color: splitMouseArea.containsMouse || splitMouseArea.pressed ? "#0078d7" : "#d0d0d0"
+
+            MouseArea {
+                id: splitMouseArea
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.SplitHCursor
+
+                property real pressGlobalX: 0
+                property real pressWidth: 0
+
+                onPressed: {
+                    pressGlobalX = mapToGlobal(mouseX, mouseY).x
+                    pressWidth = leftPanel.width
+                }
+                onPositionChanged: if (pressed) {
+                    var globalX = mapToGlobal(mouseX, mouseY).x
+                    var delta = globalX - pressGlobalX
+                    var newWidth = pressWidth + delta
+                    leftPanel.Layout.preferredWidth = Math.max(leftPanel.Layout.minimumWidth,
+                                                               Math.min(leftPanel.Layout.maximumWidth, newWidth))
                 }
             }
         }
